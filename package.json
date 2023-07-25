@@ -21,11 +21,17 @@
   },
   "dependencies": {
     "@electron-toolkit/preload": "^2.0.0",
-    "@electron-toolkit/utils": "^1.0.2"
+    "@electron-toolkit/utils": "^1.0.2",
+    "lodash.camelcase": "^4.3.0",
+    "lodash.uppercase": "^4.3.0",
+    "lodash.upperfirst": "^4.3.1"
   },
   "devDependencies": {
     "@electron-toolkit/tsconfig": "^1.0.1",
     "@electron/notarize": "^1.2.3",
+    "@types/lodash.camelcase": "^4.3.7",
+    "@types/lodash.uppercase": "^4.3.7",
+    "@types/lodash.upperfirst": "^4.3.7",
     "@types/node": "^18.16.19",
     "@types/react": "^18.2.14",
     "@types/react-dom": "^18.2.6",

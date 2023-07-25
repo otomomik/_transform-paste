@@ -1,9 +1,21 @@
-import { app, shell, BrowserWindow, globalShortcut } from 'electron'
+import { app, shell, BrowserWindow, globalShortcut, Menu, Tray, clipboard } from 'electron'
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
+import trayIcon from '../../resources/tray.png?asset'
+import { promisify } from 'util'
+import childProcess from 'child_process'
+import camelCase from 'lodash.camelcase'
+import upperFirst from 'lodash.upperfirst'
+import upperCase from 'lodash.uppercase'
 
-function createWindow(): void {
+const exec = promisify(childProcess.exec)
+
+const execPaste = async (): Promise<void> => {
+  await exec(`osascript -e 'tell application "System Events" to keystroke "v" using command down'`)
+}
+
+const createWindow = (): void => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
     frame: false,
@@ -34,8 +46,6 @@ function createWindow(): void {
     return { action: 'deny' }
   })
 
-  // HMR for renderer base on electron-vite cli.
-  // Load the remote URL for development or the local html file for production.
   if (is.dev && process.env['ELECTRON_RENDERER_URL']) {
     mainWindow.loadURL(process.env['ELECTRON_RENDERER_URL'])
   } else {
@@ -50,8 +60,31 @@ app.whenReady().then(() => {
   // Set app user model id for windows
   electronApp.setAppUserModelId('com.electron')
 
+  const tray = new Tray(trayIcon)
+  const contextMenu = Menu.buildFromTemplate([{ role: 'quit' }])
+  tray.setContextMenu(contextMenu)
+
   globalShortcut.register('Cmd+Option+V', () => {
-    console.log('OK')
+    const plainText = clipboard.readText()
+    const camelCaseText = camelCase(plainText)
+    const upperCamelCaseText = upperFirst(camelCaseText)
+    const upperCaseText = upperCase(plainText)
+
+    const texts = [plainText, camelCaseText, upperCamelCaseText, upperCaseText]
+
+    const menu = Menu.buildFromTemplate([
+      {
+        label: `Paste`,
+        submenu: texts.map((t) => ({
+          label: t,
+          click: async (): Promise<void> => {
+            clipboard.writeText(t)
+            await execPaste()
+          }
+        }))
+      }
+    ])
+    menu.popup()
   })
 
   // Default open or close DevTools by F12 in development
@@ -63,7 +96,7 @@ app.whenReady().then(() => {
 
   createWindow()
 
-  app.on('activate', function () {
+  app.on('activate', () => {
     // On macOS it's common to re-create a window in the app when the
     // dock icon is clicked and there are no other windows open.
     if (BrowserWindow.getAllWindows().length === 0) createWindow()
