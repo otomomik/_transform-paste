@@ -36,6 +36,7 @@ const createWindow = (): void => {
   mainWindow.setVisibleOnAllWorkspaces(true, {
     visibleOnFullScreen: true
   })
+  mainWindow.setHiddenInMissionControl(true)
 
   mainWindow.on('ready-to-show', () => {
     mainWindow.show()
