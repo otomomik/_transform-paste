@@ -15,6 +15,29 @@ const execPaste = async (): Promise<void> => {
   await exec(`osascript -e 'tell application "System Events" to keystroke "v" using command down'`)
 }
 
+const clipboardHistories: string[] = []
+
+setInterval(() => {
+  const text = clipboard.readText()
+  const prevText = clipboardHistories?.[0]
+  if (text === '') {
+    return
+  }
+  if (text === prevText) {
+    return
+  }
+  clipboardHistories.unshift(text)
+  clipboardHistories.splice(10)
+}, 300)
+
+const formatTextOverflows = (text: string): string => {
+  const maxLength = 30
+  if (text.length > maxLength) {
+    return text.slice(0, maxLength) + '...'
+  }
+  return text
+}
+
 const createWindow = (): void => {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
@@ -59,32 +82,48 @@ const createWindow = (): void => {
 // Some APIs can only be used after this event occurs.
 app.whenReady().then(() => {
   // Set app user model id for windows
-  electronApp.setAppUserModelId('com.electron')
+  electronApp.setAppUserModelId('com.otomomik.transform-paste')
 
   const tray = new Tray(trayIcon)
   const contextMenu = Menu.buildFromTemplate([{ role: 'quit' }])
   tray.setContextMenu(contextMenu)
 
   globalShortcut.register('Cmd+Option+V', () => {
-    const plainText = clipboard.readText()
-    const camelCaseText = camelCase(plainText)
-    const upperCamelCaseText = upperFirst(camelCaseText)
-    const upperCaseText = upperCase(plainText)
+    const menu = Menu.buildFromTemplate(
+      clipboardHistories.length === 0
+        ? [{ label: 'No history' }]
+        : [
+            ...clipboardHistories.map((h) => {
+              const plainText = h
+              const camelCaseText = camelCase(plainText)
+              const upperCamelCaseText = upperFirst(camelCaseText)
+              const upperCaseText = upperCase(plainText)
 
-    const texts = [plainText, camelCaseText, upperCamelCaseText, upperCaseText]
+              const texts = [plainText, camelCaseText, upperCamelCaseText, upperCaseText]
 
-    const menu = Menu.buildFromTemplate([
-      {
-        label: `Paste`,
-        submenu: texts.map((t) => ({
-          label: t,
-          click: async (): Promise<void> => {
-            clipboard.writeText(t)
-            await execPaste()
-          }
-        }))
-      }
-    ])
+              return {
+                label: formatTextOverflows(h),
+                submenu: texts.map((t) => ({
+                  label: formatTextOverflows(t),
+                  click: async (): Promise<void> => {
+                    clipboard.writeText(t)
+                    await execPaste()
+                  }
+                }))
+              }
+            }),
+            {
+              type: 'separator'
+            },
+            {
+              label: 'Clear',
+              click: (): void => {
+                clipboard.clear()
+                clipboardHistories.splice(0)
+              }
+            }
+          ]
+    )
     menu.popup()
   })
 
