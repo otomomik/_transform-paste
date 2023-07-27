@@ -14,6 +14,12 @@ dependencies:
   lodash.camelcase:
     specifier: ^4.3.0
     version: 4.3.0
+  lodash.kebabcase:
+    specifier: ^4.1.1
+    version: 4.1.1
+  lodash.snakecase:
+    specifier: ^4.1.1
+    version: 4.1.1
   lodash.uppercase:
     specifier: ^4.3.0
     version: 4.3.0
@@ -31,6 +37,12 @@ devDependencies:
   '@types/lodash.camelcase':
     specifier: ^4.3.7
     version: 4.3.7
+  '@types/lodash.kebabcase':
+    specifier: ^4.1.7
+    version: 4.1.7
+  '@types/lodash.snakecase':
+    specifier: ^4.1.7
+    version: 4.1.7
   '@types/lodash.uppercase':
     specifier: ^4.3.7
     version: 4.3.7
@@ -800,6 +812,18 @@ packages:
 
   /@types/lodash.camelcase@4.3.7:
     resolution: {integrity: sha512-Nfi6jpo9vuEOSIJP+mpbTezKyEt75DQlbwjiDvs/JctWkbnHDoyQo5lWqdvgNiJmVUjcmkfvlrvSEgJYvurOKg==}
+    dependencies:
+      '@types/lodash': 4.14.195
+    dev: true
+
+  /@types/lodash.kebabcase@4.1.7:
+    resolution: {integrity: sha512-qzrcpK5uiADZ9OyZaegalM0b9Y3WetoBQ04RAtP3xZFGC5ul1UxmbjZ3j6suCh0BDkvgQmoMh8t5e9cVrdJYMw==}
+    dependencies:
+      '@types/lodash': 4.14.195
+    dev: true
+
+  /@types/lodash.snakecase@4.1.7:
+    resolution: {integrity: sha512-nv9M+JJokFyfZ9QmaWVXZu2DfT40K0GictZaA8SwXczp3oCzMkjp7PtvUBQyvdoG9SnlCpoRXZDIVwQRzJbd9A==}
     dependencies:
       '@types/lodash': 4.14.195
     dev: true
@@ -2782,9 +2806,17 @@ packages:
     resolution: {integrity: sha512-TwuEnCnxbc3rAvhf/LbG7tJUDzhqXyFnv3dtzLOPgCG/hODL7WFnsbwktkD7yUV0RrreP/l1PALq/YSg6VvjlA==}
     dev: false
 
+  /lodash.kebabcase@4.1.1:
+    resolution: {integrity: sha512-N8XRTIMMqqDgSy4VLKPnJ/+hpGZN+PHQiJnSenYqPaVV/NCqEogTnAdZLQiGKhxX+JCs8waWq2t1XHWKOmlY8g==}
+    dev: false
+
   /lodash.merge@4.6.2:
     resolution: {integrity: sha512-0KpjqXRVvrYyCsX1swR/XTK0va6VQkQM6MNo7PqW77ByjAhoARA8EfrP1N4+KlKj8YS0ZUCtRT/YUuhyYDujIQ==}
     dev: true
+
+  /lodash.snakecase@4.1.1:
+    resolution: {integrity: sha512-QZ1d4xoBHYUeuouhEq3lk3Uq7ldgyFXGBhg04+oRLnIz8o9T65Eh+8YdroUwn846zchkA9yDsDl5CVVaV2nqYw==}
+    dev: false
 
   /lodash.uppercase@4.3.0:
     resolution: {integrity: sha512-+Nbnxkj7s8K5U8z6KnEYPGUOGp3woZbB7Ecs7v3LkkjLQSm2kP9SKIILitN1ktn2mB/tmM9oSlku06I+/lH7QA==}

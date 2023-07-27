@@ -7,7 +7,8 @@ import { promisify } from 'util'
 import childProcess from 'child_process'
 import camelCase from 'lodash.camelcase'
 import upperFirst from 'lodash.upperfirst'
-import upperCase from 'lodash.uppercase'
+import snakeCase from 'lodash.snakecase'
+import kebabCase from 'lodash.kebabcase'
 
 const exec = promisify(childProcess.exec)
 
@@ -20,7 +21,7 @@ const clipboardHistories: string[] = []
 setInterval(() => {
   const text = clipboard.readText()
   const prevText = clipboardHistories?.[0]
-  if (text === '') {
+  if (text === '' || text.trim() === '') {
     return
   }
   if (text === prevText) {
@@ -30,10 +31,10 @@ setInterval(() => {
   clipboardHistories.splice(10)
 }, 300)
 
+// 受け取った文字列が30文字を超える場合は、末尾を省略する
 const formatTextOverflows = (text: string): string => {
-  const maxLength = 30
-  if (text.length > maxLength) {
-    return text.slice(0, maxLength) + '...'
+  if (text.length > 30) {
+    return `${text.slice(0, 30)}...`
   }
   return text
 }
@@ -85,7 +86,7 @@ app.whenReady().then(() => {
   electronApp.setAppUserModelId('com.otomomik.transform-paste')
 
   const tray = new Tray(trayIcon)
-  const contextMenu = Menu.buildFromTemplate([{ role: 'quit' }])
+  const contextMenu = Menu.buildFromTemplate([{ label: 'Quit', click: () => app.quit() }])
   tray.setContextMenu(contextMenu)
 
   globalShortcut.register('Cmd+Option+V', () => {
@@ -97,9 +98,22 @@ app.whenReady().then(() => {
               const plainText = h
               const camelCaseText = camelCase(plainText)
               const upperCamelCaseText = upperFirst(camelCaseText)
-              const upperCaseText = upperCase(plainText)
+              const snakeCaseText = snakeCase(plainText)
+              const upperSnakeCaseText = snakeCaseText.toUpperCase()
+              const kebabCaseText = kebabCase(plainText)
+              const upperKebabCaseText = kebabCaseText.toUpperCase()
 
-              const texts = [plainText, camelCaseText, upperCamelCaseText, upperCaseText]
+              const texts = Array.from(
+                new Set([
+                  plainText,
+                  camelCaseText,
+                  upperCamelCaseText,
+                  snakeCaseText,
+                  upperSnakeCaseText,
+                  kebabCaseText,
+                  upperKebabCaseText
+                ])
+              ).filter((t) => t !== '')
 
               return {
                 label: formatTextOverflows(h),
